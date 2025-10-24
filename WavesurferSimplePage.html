@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+  <meta charset='UTF-8'>
+  <title>Decompose/Recompose the Soundscape
+    Aesthetic experimentation using spectral manipulation techniques in immersive soundscape composition
+    </title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <h1>Sound Examples from Article</h1>
+  <p>Interactive Sound Examples from the Article "Decompose/Recompose the Soundscape". Click on spectrogram to play, use pause button to stop.</p>
+
+  <div id='players'></div>
+
+  <script type='module'>
+    import WaveSurfer from 'https://unpkg.com/wavesurfer.js@beta/dist/wavesurfer.js';
+    import SpectrogramPlugin from 'https://unpkg.com/wavesurfer.js@beta/dist/plugins/spectrogram.js';
+
+    const audioGroups = [
+      {
+        title: 'Monte Ahava Soundscape (Alentejo)',
+        files: [
+          ['Original Recording', 'audio/MonteAhava2.ogg'],
+          ['Manipulated 1', 'audio/1_SpectraeqTest12_MonteAhava2Fix.ogg'],
+          ['Manipulated 2', 'audio/16_SpectraeqTest9_MonteAhavaSoundscape2.ogg'],
+          ['Manipulated 3', 'audio/4_monteahava2_Autoconvolutionx1.ogg']
+          
+        ]
+      },
+      {
+        title: 'Soundwalk Field Recording (Spanish Stairs to Via Del Corso, Rome)',
+        files: [
+          ['Original Recording', 'audio/EditingRomeAmbience_Phonography_SpanishStairs2ViaDelCorso.ogg'],
+          ['Manipulated Composition', 'audio/2_SpectraeqTest21_RomeViaDelCorsonicely.ogg']
+        ]
+      },
+      {
+        title: 'Vila Real Soundscape (Binaural)',
+        files: [
+          ['Original Recording', 'audio/vilaRealAmbience1Binaural.ogg'],
+          ['Manipulated Composition', 'audio/10_SpectraeqTest11_VilaRealFix.ogg'],
+          ['Manipulated 2', 'audio/11_SpectraeqTest13_VilaRealFixerLow.ogg']
+        ]
+      },
+      {
+        title: 'STOP Demonstration Field Recording',
+        files: [
+          ['Original Recording', 'audio/StopDemostrationEdit.ogg'],
+          ['Manipulated 1', 'audio/13_SpectraeqTest23_STOP.ogg'],
+          ['Manipulated 2', 'audio/14_SpectraeqTest3_STOP Demonstration Drummers.ogg']
+        ]
+      }
+    ];
+
+    const allPlayers = [];
+
+    audioGroups.forEach((group, groupIndex) => {
+      const groupDiv = document.createElement('div');
+      groupDiv.className = 'group';
+
+      const groupTitle = document.createElement('h2');
+      groupTitle.textContent = group.title;
+      groupDiv.appendChild(groupTitle);
+
+      group.files.forEach(([label, url], fileIndex) => {
+        const container = document.createElement('div');
+        container.className = 'player';
+
+        const title = document.createElement('h3');
+        title.textContent = label;
+        container.appendChild(title);
+
+
+        const spectrogramDiv = document.createElement('div');
+        spectrogramDiv.id = `spectrogram-${groupIndex}-${fileIndex}`;
+        spectrogramDiv.className = 'spectrogram';
+        spectrogramDiv.style.position = 'relative';
+        container.appendChild(spectrogramDiv);
+
+        // Create progress scroller
+        const progressScroller = document.createElement('div');
+        progressScroller.id = `progress-${groupIndex}-${fileIndex}`;
+        progressScroller.className = 'progress-scroller';
+        progressScroller.style.cssText = `
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 2px;
+          height: 100%;
+          background-color: #ff0000;
+          z-index: 10;
+          pointer-events: none;
+          opacity: 0.8;
+        `;
+        spectrogramDiv.appendChild(progressScroller);
+
+        const playBtn = document.createElement('button');
+        playBtn.textContent = 'Play';
+        playBtn.id = `playBtn-${groupIndex}-${fileIndex}`;
+        container.appendChild(playBtn);
+
+        const pauseBtn = document.createElement('button');
+        pauseBtn.textContent = 'Pause';
+        pauseBtn.id = `pauseBtn-${groupIndex}-${fileIndex}`;
+        pauseBtn.disabled = true;
+        container.appendChild(pauseBtn);
+
+        groupDiv.appendChild(container);
+
+        document.getElementById('players').appendChild(groupDiv);
+
+        // Create WaveSurfer instance with optimized settings
+        const wavesurfer = WaveSurfer.create({
+          container: '#' + spectrogramDiv.id,
+          waveColor: 'transparent',
+          progressColor: 'transparent',
+          url: url,
+          height: 0, // Set height to 0 to hide waveform
+          // Optimize for faster loading
+          minPxPerSec: 1,
+          // Hide the waveform completely
+          hideScrollbar: true,
+          normalize: false,
+          plugins: [
+            SpectrogramPlugin.create({
+              container: '#' + spectrogramDiv.id,
+              labels: true,
+              height: 200,
+              // Performance optimizations from .txt file
+              fftSamples: 1024, // Optimized FFT resolution
+              useWebWorker: true, // Use web worker for FFT calculations
+              scale: 'mel', // Mel scale for better human hearing perception
+              frequencyMax: 8000, // Limit frequency range for performance
+              frequencyMin: 0,
+              splitChannels: false, // Combine channels for better performance
+              windowFunc: 'hann', // Optimized window function
+              gainDB: 20, // Standard gain
+              rangeDB: 80, // Standard dynamic range
+              // maxCanvasWidth: 30000 // Removed to keep single canvas
+            })
+          ]
+        });
+
+        // Set built-in 'classic' colormap after plugin is ready
+        wavesurfer.once('plugin-ready', () => {
+          const spectrogram = wavesurfer.getPlugin('spectrogram');
+          spectrogram.setOptions({ colorMap: spectrogram.constructor.COLORMAPS.classic });
+        });
+
+        allPlayers.push(wavesurfer);
+
+        // Click on spectrogram to play (optimized interaction)
+        wavesurfer.on('interaction', () => {
+          // Pause all other players
+          allPlayers.forEach(p => {
+            if (p !== wavesurfer) p.pause();
+          });
+          wavesurfer.play();
+          updateButtonStates(wavesurfer, playBtn, pauseBtn);
+        });
+
+        // Add click event listener to spectrogram container for click-to-play and seek
+        spectrogramDiv.addEventListener('click', (e) => {
+          // Calculate click position for seeking
+          const rect = spectrogramDiv.getBoundingClientRect();
+          const clickX = e.clientX - rect.left;
+          const spectrogramWidth = spectrogramDiv.offsetWidth;
+          const clickProgress = clickX / spectrogramWidth;
+          
+          // Seek to clicked position
+          const duration = wavesurfer.getDuration();
+          if (duration) {
+            wavesurfer.seekTo(clickProgress);
+          }
+          
+          // Pause all other players
+          allPlayers.forEach(p => {
+            if (p !== wavesurfer) p.pause();
+          });
+          wavesurfer.play();
+          updateButtonStates(wavesurfer, playBtn, pauseBtn);
+        });
+
+        // Play button functionality
+        playBtn.onclick = () => {
+          // Pause all other players
+          allPlayers.forEach(p => {
+            if (p !== wavesurfer) p.pause();
+          });
+          wavesurfer.play();
+          updateButtonStates(wavesurfer, playBtn, pauseBtn);
+        };
+
+        // Pause button functionality
+        pauseBtn.onclick = () => {
+          wavesurfer.pause();
+          updateButtonStates(wavesurfer, playBtn, pauseBtn);
+        };
+
+        // Update button states based on player state
+        function updateButtonStates(player, playBtn, pauseBtn) {
+          if (player.isPlaying()) {
+            playBtn.disabled = true;
+            pauseBtn.disabled = false;
+          } else {
+            playBtn.disabled = false;
+            pauseBtn.disabled = true;
+          }
+        }
+
+        // Listen for state changes to update buttons
+        wavesurfer.on('play', () => updateButtonStates(wavesurfer, playBtn, pauseBtn));
+        wavesurfer.on('pause', () => updateButtonStates(wavesurfer, playBtn, pauseBtn));
+        wavesurfer.on('finish', () => updateButtonStates(wavesurfer, playBtn, pauseBtn));
+
+        // Update progress scroller position during playback
+        wavesurfer.on('audioprocess', () => {
+          const progress = wavesurfer.getCurrentTime() / wavesurfer.getDuration();
+          const spectrogramWidth = spectrogramDiv.offsetWidth;
+          const scrollerPosition = progress * spectrogramWidth;
+          progressScroller.style.left = scrollerPosition + 'px';
+        });
+
+        // Reset scroller position when audio finishes
+        wavesurfer.on('finish', () => {
+          progressScroller.style.left = '0px';
+        });
+      });
+    });
+  </script>
+</body>
+</html>
