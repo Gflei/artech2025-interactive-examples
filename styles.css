@@ -145,7 +145,6 @@ button:disabled {
 .spectrogram canvas {
   border-radius: 4px;
   display: block; /* Avoid inline baseline spacing */
-  width: 100%;
 }
 
 /* Error states */
