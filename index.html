@@ -72,6 +72,21 @@
         container.appendChild(title);
 
 
+        // Hidden-but-measurable waveform container (off-screen)
+        const waveformDiv = document.createElement('div');
+        waveformDiv.id = `waveform-${groupIndex}-${fileIndex}`;
+        waveformDiv.style.cssText = `
+          position: absolute;
+          left: -99999px;
+          width: 1px;
+          height: 1px;
+          overflow: hidden;
+          clip: rect(0 0 0 0);
+          clip-path: inset(50%);
+          white-space: nowrap;
+        `;
+        container.appendChild(waveformDiv);
+
         const spectrogramDiv = document.createElement('div');
         spectrogramDiv.id = `spectrogram-${groupIndex}-${fileIndex}`;
         spectrogramDiv.className = 'spectrogram';
@@ -112,11 +127,11 @@
 
         // Create WaveSurfer instance with optimized settings
         const wavesurfer = WaveSurfer.create({
-          container: '#' + spectrogramDiv.id,
+          container: '#' + waveformDiv.id,
           waveColor: 'transparent',
           progressColor: 'transparent',
           url: url,
-          height: 1, // Minimal height to avoid layout/sizing issues
+          height: 1, // Minimal height; off-screen container avoids layout impact
           // Optimize for faster loading
           minPxPerSec: 1,
           // Hide the waveform completely
