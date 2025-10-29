@@ -2,14 +2,16 @@
 
 This repository contains interactive sound examples from the article "Decompose/Recompose the Soundscape: Aesthetic experimentation using spectral manipulation techniques in immersive soundscape composition".
 
-## Files Structure
+## File Structure
 
 ```
 InteractiveExamples/
-├── WavesurferSimplePage.html    # Main HTML file with interactive examples
-├── styles.css                   # CSS styling for the page
-├── README.md                    # This file
-└── audio/                       # Audio files directory
+├── index.html                 # Main page with spectrogram-only players
+├── styles.css                 # Styles for layout and components
+├── archive/                   # Archived examples and documentation stubs
+├── LICENSE
+├── README.md                  # This file
+└── audio/                     # Audio files directory
     ├── MonteAhava2.ogg
     ├── 1_SpectraeqTest12_MonteAhava2Fix.ogg
     ├── 4_monteahava2_Autoconvolutionx1.ogg
@@ -26,79 +28,54 @@ InteractiveExamples/
 
 ## How to Use
 
-1. **Open the HTML file**: Simply open `WavesurferSimplePage.html` in a web browser
-2. **No server required**: The page works locally without needing a web server
-3. **Interactive features**:
-   - Click on any spectrogram to start playback and seek to position
-   - Use Play/Pause buttons for control
-   - Only one audio plays at a time (others auto-pause)
-   - View spectrograms with frequency analysis and progress scroller
+1. Open `index.html` in a modern web browser
+2. Click on any spectrogram to play/seek; use Play/Pause buttons
+3. Only one track plays at a time (others auto-pause)
 
-## Audio Content
+Archived examples are in `archive/` and are kept for documentation only.
 
-The examples include four main categories:
+## What You’ll See
 
-### 1. Monte Ahava Soundscape (Alentejo)
-- Original field recording
-- Three manipulated versions using spectral techniques
+- Spectrogram-first UI (waveform is rendered into a hidden container)
+- Vertical red progress scroller synced to playback
+- Grouped examples by recording/composition
 
-### 2. Soundwalk Field Recording (Spanish Stairs to Via Del Corso, Rome)
-- Original binaural recording
-- Spectral manipulation composition
+## Technical Details
 
-### 3. Vila Real Soundscape (Binaural)
-- Original binaural recording
-- Two manipulated versions with different spectral processing
-
-### 4. STOP Demonstration Field Recording
-- Original field recording
-- Two manipulated versions demonstrating spectral techniques
-
-## Technical Features
-
-- **WaveSurfer.js**: Interactive spectrogram visualization with progress scroller
-- **Spectrogram Analysis**: Real-time frequency analysis with classic colormap
-- **Optimized Performance**: 
-  - Web Worker for FFT calculations
-  - Optimized FFT settings (1024 samples)
-  - Mel scale frequency analysis
-  - Limited frequency range (0-8kHz) for performance
-- **Responsive Design**: Works on desktop and mobile devices
-- **Local Audio Files**: All examples use local .ogg files
-
-## Browser Compatibility
-
-- Modern browsers with ES6 module support
-- Chrome, Firefox, Safari, Edge (recent versions)
-- Requires JavaScript enabled
+- WaveSurfer.js v7 (ES module import from CDN)
+- Spectrogram plugin settings:
+  - height: 550
+  - scale: mel
+  - frequencyMin: 35, frequencyMax: 20000
+  - fftSamples: 2048
+  - rangeDB: 60, gainDB: 20
+  - color map: hot
+  - useWebWorker: true
+  - maxCanvasWidth: 4000 (tiling for performance)
+- Waveform is fully hidden and rendered in a separate `div` with `display: none`
 
 ## Performance Notes
 
-The page is optimized for fast loading and smooth interaction:
-- FFT calculations run in background threads
-- Single canvas spectrograms (no splitting)
-- Optimized frequency range for human hearing
-- Efficient memory usage
+- Uses Web Workers for FFT computation
+- Canvas tiling prevents oversized canvases on long files
+- Labels enabled; disable if you need additional performance on low-end devices
 
 ## Troubleshooting
 
-If audio doesn't play:
-1. Check that all audio files are in the `audio/` folder
-2. Ensure your browser supports .ogg format
-3. Check browser console for any error messages
-4. Try refreshing the page
+If audio doesn't play or the page feels slow:
+1. Hard refresh the page (Ctrl+F5) to bypass cache
+2. Ensure your browser supports .ogg playback
+3. Try closing other heavy tabs
+4. Optionally lower `fftSamples` to 1024 in `index.html`
 
 ## Full Album
 
 The complete album "Decompose/Recompose the Soundscape" is available on Bandcamp:
 
-[![Decompose/Recompose the Soundscape](https://bandcamp.com/EmbeddedPlayer/album=144355698/size=large/bgcol=ffffff/linkcol=0687f5/tracklist=false/transparent=true/)](https://guyfleisher.bandcamp.com/album/decompose-recompose-the-soundscape)
-
-**Listen to the full album**: [https://guyfleisher.bandcamp.com/album/decompose-recompose-the-soundscape](https://guyfleisher.bandcamp.com/album/decompose-recompose-the-soundscape)
+[Listen on Bandcamp](https://guyfleisher.bandcamp.com/album/decompose-recompose-the-soundscape)
 
 ## Credits
 
-- **WaveSurfer.js**: https://wavesurfer.xyz/
-- **Audio Processing**: Spectral manipulation techniques
-- **Field Recordings**: Original compositions and manipulations
-- **Album**: [Decompose/Recompose the Soundscape by Guy Fleisher](https://guyfleisher.bandcamp.com/album/decompose-recompose-the-soundscape)
+- WaveSurfer.js: https://wavesurfer.xyz/
+- Audio Processing: Spectral manipulation techniques
+- Field Recordings and Album: [Decompose/Recompose the Soundscape by Guy Fleisher](https://guyfleisher.bandcamp.com/album/decompose-recompose-the-soundscape)
