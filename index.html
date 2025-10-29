@@ -116,7 +116,7 @@
           waveColor: 'blue',
           progressColor: 'blue',
           url: url,
-          height: 200, // Set height to 0 to hide waveform
+          height: 10, // Set height to 0 to hide waveform
           // Optimize for faster loading
           minPxPerSec: 1,
           // Hide the waveform completely
@@ -131,13 +131,13 @@
               fftSamples: 1024, // Optimized FFT resolution
               useWebWorker: true, // Use web worker for FFT calculations
               scale: 'mel', // Mel scale for better human hearing perception
-              frequencyMax: 18000, // Limit frequency range for performance
+              frequencyMax: 13500, // Limit frequency range for performance
               frequencyMin: 20,
               splitChannels: false, // Combine channels for better performance
               windowFunc: 'hann', // Optimized window function
               gainDB: 20, // Standard gain
               rangeDB: 80, // Standard dynamic range
-              // maxCanvasWidth: 30000 // Removed to keep single canvas
+              maxCanvasWidth: 30000 // Removed to keep single canvas
             })
           ]
         });
