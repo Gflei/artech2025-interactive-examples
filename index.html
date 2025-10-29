@@ -116,7 +116,7 @@
           waveColor: 'transparent',
           progressColor: 'transparent',
           url: url,
-          height: 0, // Set height to 0 to hide waveform
+          height: 200, // Set height to 0 to hide waveform
           // Optimize for faster loading
           minPxPerSec: 1,
           // Hide the waveform completely
@@ -126,7 +126,7 @@
             SpectrogramPlugin.create({
               container: '#' + spectrogramDiv.id,
               labels: true,
-              height: 400,
+              height: 200,
               // Performance optimizations from .txt file
               fftSamples: 1024, // Optimized FFT resolution
               useWebWorker: true, // Use web worker for FFT calculations
