@@ -36,7 +36,7 @@
         ]
       },
       {
-        title: 'Vila Real Soundscape',
+        title: 'Vila Real Soundscape (Portugal)',
         files: [
           ['Original Recording', 'audio/vilaRealAmbience1Binaural.ogg'],
           ['Manipulated Composition', 'audio/10_SpectraeqTest11_VilaRealFix.ogg'],
@@ -44,7 +44,7 @@
         ]
       },
       {
-        title: 'STOP Demonstration Field Recording',
+        title: 'STOP Centro Comercial Demonstration Field Recording (Porto, Portugal)',
         files: [
           ['Original Recording', 'audio/StopDemostrationEdit.ogg'],
           ['Manipulated 1', 'audio/13_SpectraeqTest23_STOP.ogg'],
@@ -90,7 +90,17 @@
         const spectrogramDiv = document.createElement('div');
         spectrogramDiv.id = `spectrogram-${groupIndex}-${fileIndex}`;
         spectrogramDiv.className = 'spectrogram';
-        spectrogramDiv.style.position = 'relative';
+        spectrogramDiv.style.cssText = `
+          position: relative;
+          height: 450px; /* smaller height as requested */
+          width: 100%;
+          background: #f8f9fa;
+          border: 1px solid #ddd;
+          border-radius: 4px;
+          overflow: hidden;
+          line-height: 0; /* remove inline canvas gaps */
+          box-sizing: border-box;
+        `;
         container.appendChild(spectrogramDiv);
 
         // Create progress scroller
@@ -113,12 +123,14 @@
         const playBtn = document.createElement('button');
         playBtn.textContent = 'Play';
         playBtn.id = `playBtn-${groupIndex}-${fileIndex}`;
+        playBtn.style.cssText = 'margin:6px 10px 0 0;padding:8px 14px;font-size:14px;border-radius:6px;border:1px solid #ccc;background:#3498db;color:#fff;cursor:pointer;';
         container.appendChild(playBtn);
 
         const pauseBtn = document.createElement('button');
         pauseBtn.textContent = 'Pause';
         pauseBtn.id = `pauseBtn-${groupIndex}-${fileIndex}`;
         pauseBtn.disabled = true;
+        pauseBtn.style.cssText = 'margin:6px 0 0 0;padding:8px 14px;font-size:14px;border-radius:6px;border:1px solid #ccc;background:#3498db;color:#fff;cursor:pointer;';
         container.appendChild(pauseBtn);
 
         groupDiv.appendChild(container);
@@ -141,7 +153,7 @@
             SpectrogramPlugin.create({
               container: '#' + spectrogramDiv.id,
               labels: true,
-              height: 550,
+              height: 450,
               // Performance optimizations from .txt file
               fftSamples: 2048, // Better FFT resolution
               useWebWorker: true, // Use web worker for FFT calculations
@@ -153,7 +165,7 @@
           ]
         });
 
-        // Set built-in 'classic' colormap after plugin is ready
+        // Set built-in colormap after plugin is ready
         wavesurfer.once('plugin-ready', () => {
           const spectrogram = wavesurfer.getPlugin('spectrogram');
           spectrogram.setOptions({ colorMap: spectrogram.constructor.COLORMAPS.hot });
@@ -162,7 +174,7 @@
         // Ensure spectrogram measures after audio and layout are ready
         wavesurfer.once('ready', () => {
           const spectrogram = wavesurfer.getPlugin('spectrogram');
-          requestAnimationFrame(() => spectrogram.setOptions({ height: 550 }));
+          requestAnimationFrame(() => spectrogram.setOptions({ height: 450 }));
         });
 
         allPlayers.push(wavesurfer);
