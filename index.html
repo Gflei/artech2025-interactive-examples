@@ -19,7 +19,7 @@
 
     const audioGroups = [
       {
-        title: 'Monte Ahava Soundscape (Alentejo) Field Recording',
+        title: 'Monte Ahava Soundscape (Alentejo)',
         files: [
           ['Original Recording', 'audio/MonteAhava2.ogg'],
           ['Manipulated 1', 'audio/1_SpectraeqTest12_MonteAhava2Fix.ogg'],
@@ -29,14 +29,14 @@
         ]
       },
       {
-        title: 'Spanish Stairs to Via Del Corso (Rome, Italy) Soundwalk Field Recording',
+        title: 'Soundwalk Field Recording (Spanish Stairs to Via Del Corso, Rome)',
         files: [
           ['Original Recording', 'audio/EditingRomeAmbience_Phonography_SpanishStairs2ViaDelCorso.ogg'],
           ['Manipulated Composition', 'audio/2_SpectraeqTest21_RomeViaDelCorsonicely.ogg']
         ]
       },
       {
-        title: 'Vila Real Soundscape (Portugal) Field Recording',
+        title: 'Vila Real Soundscape',
         files: [
           ['Original Recording', 'audio/vilaRealAmbience1Binaural.ogg'],
           ['Manipulated Composition', 'audio/10_SpectraeqTest11_VilaRealFix.ogg'],
@@ -44,7 +44,7 @@
         ]
       },
       {
-        title: 'STOP Centro Comercial Demonstration (Porto, Portugal) Field Recording',
+        title: 'STOP Demonstration Field Recording',
         files: [
           ['Original Recording', 'audio/StopDemostrationEdit.ogg'],
           ['Manipulated 1', 'audio/13_SpectraeqTest23_STOP.ogg'],
@@ -71,6 +71,12 @@
         title.textContent = label;
         container.appendChild(title);
 
+
+        // Hidden waveform container (prevents empty layout space)
+        const waveformDiv = document.createElement('div');
+        waveformDiv.id = `waveform-${groupIndex}-${fileIndex}`;
+        waveformDiv.style.display = 'none';
+        container.appendChild(waveformDiv);
 
         const spectrogramDiv = document.createElement('div');
         spectrogramDiv.id = `spectrogram-${groupIndex}-${fileIndex}`;
@@ -112,11 +118,11 @@
 
         // Create WaveSurfer instance with optimized settings
         const wavesurfer = WaveSurfer.create({
-          container: '#' + spectrogramDiv.id,
+          container: '#' + waveformDiv.id,
           waveColor: 'transparent',
           progressColor: 'transparent',
           url: url,
-          height: 0, // Set height to 0 to hide waveform
+          height: 0, // Hidden waveform container also ensures no layout space
           // Optimize for faster loading
           minPxPerSec: 1,
           // Hide the waveform completely
@@ -145,7 +151,7 @@
         // Set built-in 'classic' colormap after plugin is ready
         wavesurfer.once('plugin-ready', () => {
           const spectrogram = wavesurfer.getPlugin('spectrogram');
-          spectrogram.setOptions({ colorMap: spectrogram.constructor.COLORMAPS.classic });
+          spectrogram.setOptions({ colorMap: spectrogram.constructor.COLORMAPS.hot });
         });
 
         allPlayers.push(wavesurfer);
