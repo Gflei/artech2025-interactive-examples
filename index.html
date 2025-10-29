@@ -19,7 +19,7 @@
 
     const audioGroups = [
       {
-        title: 'Monte Ahava Soundscape (Alentejo)',
+        title: 'Monte Ahava Soundscape (Alentejo) Field Recording',
         files: [
           ['Original Recording', 'audio/MonteAhava2.ogg'],
           ['Manipulated 1', 'audio/1_SpectraeqTest12_MonteAhava2Fix.ogg'],
@@ -29,14 +29,14 @@
         ]
       },
       {
-        title: 'Soundwalk Field Recording (Spanish Stairs to Via Del Corso, Rome)',
+        title: 'Spanish Stairs to Via Del Corso (Rome, Italy) Soundwalk Field Recording',
         files: [
           ['Original Recording', 'audio/EditingRomeAmbience_Phonography_SpanishStairs2ViaDelCorso.ogg'],
           ['Manipulated Composition', 'audio/2_SpectraeqTest21_RomeViaDelCorsonicely.ogg']
         ]
       },
       {
-        title: 'Vila Real Soundscape (Binaural)',
+        title: 'Vila Real Soundscape (Portugal) Field Recording',
         files: [
           ['Original Recording', 'audio/vilaRealAmbience1Binaural.ogg'],
           ['Manipulated Composition', 'audio/10_SpectraeqTest11_VilaRealFix.ogg'],
@@ -44,7 +44,7 @@
         ]
       },
       {
-        title: 'STOP Demonstration Field Recording',
+        title: 'STOP Centro Comercial Demonstration (Porto, Portugal) Field Recording',
         files: [
           ['Original Recording', 'audio/StopDemostrationEdit.ogg'],
           ['Manipulated 1', 'audio/13_SpectraeqTest23_STOP.ogg'],
@@ -126,13 +126,13 @@
             SpectrogramPlugin.create({
               container: '#' + spectrogramDiv.id,
               labels: true,
-              height: 200,
+              height: 400,
               // Performance optimizations from .txt file
               fftSamples: 1024, // Optimized FFT resolution
               useWebWorker: true, // Use web worker for FFT calculations
               scale: 'mel', // Mel scale for better human hearing perception
-              frequencyMax: 8000, // Limit frequency range for performance
-              frequencyMin: 0,
+              frequencyMax: 18000, // Limit frequency range for performance
+              frequencyMin: 20,
               splitChannels: false, // Combine channels for better performance
               windowFunc: 'hann', // Optimized window function
               gainDB: 20, // Standard gain
