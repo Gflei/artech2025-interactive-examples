@@ -72,62 +72,20 @@
         container.appendChild(title);
 
 
-        // Hidden-but-measurable waveform container (off-screen)
+        // Visible waveform container
         const waveformDiv = document.createElement('div');
         waveformDiv.id = `waveform-${groupIndex}-${fileIndex}`;
-        waveformDiv.style.cssText = `
-          position: absolute;
-          left: -99999px;
-          width: 1px;
-          height: 1px;
-          overflow: hidden;
-          clip: rect(0 0 0 0);
-          clip-path: inset(50%);
-          white-space: nowrap;
-        `;
+        waveformDiv.style.cssText = `margin:8px 0;`;
         container.appendChild(waveformDiv);
 
-        // Wrapper controls layout; inner spectrogram div is clean for plugin rendering
-        const spectroWrap = document.createElement('div');
-        spectroWrap.id = `spectrowrap-${groupIndex}-${fileIndex}`;
-        spectroWrap.style.cssText = `
-          position: relative;
-          height: 450px;
-          width: 100%;
-          background: #f8f9fa;
-          border: 1px solid #ddd;
-          border-radius: 4px;
-          overflow: hidden;
-          line-height: 0;
-          box-sizing: border-box;
-        `;
-
+        // Visible spectrogram container (equal height to waveform)
         const spectrogramDiv = document.createElement('div');
         spectrogramDiv.id = `spectrogram-${groupIndex}-${fileIndex}`;
-        spectrogramDiv.className = 'spectrogram';
-        spectrogramDiv.style.cssText = `
-          height: 100%;
-          width: 100%;
-        `;
-        spectroWrap.appendChild(spectrogramDiv);
-        container.appendChild(spectroWrap);
+        spectrogramDiv.style.cssText = `margin:8px 0;`;
+        container.appendChild(spectrogramDiv);
 
         // Create progress scroller
-        const progressScroller = document.createElement('div');
-        progressScroller.id = `progress-${groupIndex}-${fileIndex}`;
-        progressScroller.className = 'progress-scroller';
-        progressScroller.style.cssText = `
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 2px;
-          height: 100%;
-          background-color: #ff0000;
-          z-index: 10;
-          pointer-events: none;
-          opacity: 0.8;
-        `;
-        spectroWrap.appendChild(progressScroller);
+        // No overlay elements to keep rendering simple and fast
 
         const playBtn = document.createElement('button');
         playBtn.textContent = 'Play';
@@ -149,42 +107,29 @@
         // Create WaveSurfer instance with optimized settings
         const wavesurfer = WaveSurfer.create({
           container: '#' + waveformDiv.id,
-          waveColor: 'transparent',
-          progressColor: 'transparent',
+          waveColor: '#000000',
+          progressColor: '#555555',
           url: url,
-          height: 1, // Minimal height; off-screen container avoids layout impact
-          // Optimize for faster loading
-          minPxPerSec: 1,
-          // Hide the waveform completely
+          height: 256,
           hideScrollbar: true,
           normalize: false,
           plugins: [
             SpectrogramPlugin.create({
               container: '#' + spectrogramDiv.id,
               labels: true,
-              height: 450,
-              // Performance optimizations from .txt file
-              fftSamples: 2048, // Better FFT resolution
-              useWebWorker: true, // Use web worker for FFT calculations
-              frequencyMax: 20000, // Limit frequency range for performance
+              height: 256,
+              fftSamples: 2048,
+              useWebWorker: true,
+              frequencyMax: 20000,
               frequencyMin: 35,
-              splitChannels: false, // Combine channels for better performance
-              windowFunc: 'hann' // Optimized window function
+              splitChannels: false,
+              windowFunc: 'hann',
+              maxCanvasWidth: 4000
             })
           ]
         });
 
-        // Set built-in colormap after plugin is ready
-        wavesurfer.once('plugin-ready', () => {
-          const spectrogram = wavesurfer.getPlugin('spectrogram');
-          spectrogram.setOptions({ colorMap: spectrogram.constructor.COLORMAPS.hot });
-        });
-
-        // Ensure spectrogram measures after audio and layout are ready
-        wavesurfer.once('ready', () => {
-          const spectrogram = wavesurfer.getPlugin('spectrogram');
-          requestAnimationFrame(() => spectrogram.setOptions({ height: 450 }));
-        });
+        // Use default colormap for simplicity and speed
 
         allPlayers.push(wavesurfer);
 
@@ -199,11 +144,11 @@
         });
 
         // Add click event listener to spectrogram container for click-to-play and seek
-        spectroWrap.addEventListener('click', (e) => {
+        spectrogramDiv.addEventListener('click', (e) => {
           // Calculate click position for seeking
-          const rect = spectroWrap.getBoundingClientRect();
+          const rect = spectrogramDiv.getBoundingClientRect();
           const clickX = e.clientX - rect.left;
-          const spectrogramWidth = spectroWrap.offsetWidth;
+          const spectrogramWidth = spectrogramDiv.offsetWidth;
           const clickProgress = clickX / spectrogramWidth;
           
           // Seek to clicked position
@@ -252,18 +197,7 @@
         wavesurfer.on('pause', () => updateButtonStates(wavesurfer, playBtn, pauseBtn));
         wavesurfer.on('finish', () => updateButtonStates(wavesurfer, playBtn, pauseBtn));
 
-        // Update progress scroller position during playback
-        wavesurfer.on('audioprocess', () => {
-          const progress = wavesurfer.getCurrentTime() / wavesurfer.getDuration();
-          const spectrogramWidth = spectroWrap.offsetWidth;
-          const scrollerPosition = progress * spectrogramWidth;
-          progressScroller.style.left = scrollerPosition + 'px';
-        });
-
-        // Reset scroller position when audio finishes
-        wavesurfer.on('finish', () => {
-          progressScroller.style.left = '0px';
-        });
+        // Simple example: no custom progress overlay
       });
     });
   </script>
