@@ -113,10 +113,10 @@
         // Create WaveSurfer instance with optimized settings
         const wavesurfer = WaveSurfer.create({
           container: '#' + spectrogramDiv.id,
-          waveColor: 'blue',
-          progressColor: 'blue',
+          waveColor: 'transparent',
+          progressColor: 'transparent',
           url: url,
-          height: 10, // Set height to 0 to hide waveform
+          height: 0, // Set height to 0 to hide waveform
           // Optimize for faster loading
           minPxPerSec: 1,
           // Hide the waveform completely
