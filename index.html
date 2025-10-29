@@ -72,22 +72,6 @@
         container.appendChild(title);
 
 
-        // Hidden waveform container (prevents empty layout space)
-        const waveformDiv = document.createElement('div');
-        waveformDiv.id = `waveform-${groupIndex}-${fileIndex}`;
-        // Keep it in the DOM and measurable, but fully hidden and non-intrusive
-        waveformDiv.style.cssText = `
-          position: absolute;
-          left: -99999px;
-          width: 1px;
-          height: 1px;
-          overflow: hidden;
-          clip: rect(0 0 0 0);
-          clip-path: inset(50%);
-          white-space: nowrap;
-        `;
-        container.appendChild(waveformDiv);
-
         const spectrogramDiv = document.createElement('div');
         spectrogramDiv.id = `spectrogram-${groupIndex}-${fileIndex}`;
         spectrogramDiv.className = 'spectrogram';
@@ -128,11 +112,11 @@
 
         // Create WaveSurfer instance with optimized settings
         const wavesurfer = WaveSurfer.create({
-          container: '#' + waveformDiv.id,
+          container: '#' + spectrogramDiv.id,
           waveColor: 'transparent',
           progressColor: 'transparent',
           url: url,
-          height: 0, // Hidden waveform container also ensures no layout space
+          height: 1, // Minimal height to avoid layout/sizing issues
           // Optimize for faster loading
           minPxPerSec: 1,
           // Hide the waveform completely
@@ -146,14 +130,10 @@
               // Performance optimizations from .txt file
               fftSamples: 1024, // Streamlined FFT for performance
               useWebWorker: true, // Use web worker for FFT calculations
-              scale: 'mel', // Mel scale for better human hearing perception
               frequencyMax: 20000, // Limit frequency range for performance
               frequencyMin: 35,
               splitChannels: false, // Combine channels for better performance
-              windowFunc: 'hann', // Optimized window function
-              gainDB: 20, // Standard gain
-              rangeDB: 60, // Higher contrast dynamic range
-              maxCanvasWidth: 4000 // Tile canvas to prevent huge single canvas
+              windowFunc: 'hann' // Optimized window function
             })
           ]
         });
@@ -167,9 +147,7 @@
         // Ensure spectrogram measures after audio and layout are ready
         wavesurfer.once('ready', () => {
           const spectrogram = wavesurfer.getPlugin('spectrogram');
-          // Re-apply height to trigger re-measure and redraw on next frame
-          const opts = { height: 550 };
-          requestAnimationFrame(() => spectrogram.setOptions(opts));
+          requestAnimationFrame(() => spectrogram.setOptions({ height: 550 }));
         });
 
         allPlayers.push(wavesurfer);
