@@ -126,18 +126,18 @@
             SpectrogramPlugin.create({
               container: '#' + spectrogramDiv.id,
               labels: true,
-              height: 200,
+              height: 550,
               // Performance optimizations from .txt file
-              fftSamples: 1024, // Optimized FFT resolution
+              fftSamples: 4096, // Higher FFT resolution for clearer frequency detail
               useWebWorker: true, // Use web worker for FFT calculations
               scale: 'mel', // Mel scale for better human hearing perception
-              frequencyMax: 13500, // Limit frequency range for performance
-              frequencyMin: 20,
+              frequencyMax: 20000, // Limit frequency range for performance
+              frequencyMin: 35,
               splitChannels: false, // Combine channels for better performance
               windowFunc: 'hann', // Optimized window function
               gainDB: 20, // Standard gain
-              rangeDB: 80, // Standard dynamic range
-              //maxCanvasWidth: 30000 // Removed to keep single canvas
+              rangeDB: 60, // Higher contrast dynamic range
+              // maxCanvasWidth: 30000 // Removed to keep single canvas
             })
           ]
         });
