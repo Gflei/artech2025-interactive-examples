@@ -134,7 +134,7 @@
               labels: true,
               height: 550,
               // Performance optimizations from .txt file
-              fftSamples: 4096, // Higher FFT resolution for clearer frequency detail
+              fftSamples: 2048, // Balanced FFT resolution for clarity and performance
               useWebWorker: true, // Use web worker for FFT calculations
               scale: 'mel', // Mel scale for better human hearing perception
               frequencyMax: 20000, // Limit frequency range for performance
@@ -143,7 +143,7 @@
               windowFunc: 'hann', // Optimized window function
               gainDB: 20, // Standard gain
               rangeDB: 60, // Higher contrast dynamic range
-              // maxCanvasWidth: 30000 // Removed to keep single canvas
+              maxCanvasWidth: 4000 // Tile canvas to prevent huge single canvas
             })
           ]
         });
