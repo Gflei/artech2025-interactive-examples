@@ -72,6 +72,8 @@ h2 {
 .spectrogram {
   border: 1px solid #ddd;
   background: #f8f9fa;
+  height: 550px; /* Ensure container matches plugin height */
+  line-height: 0; /* Remove inline gaps around canvases */
 }
 
 button {
@@ -142,6 +144,8 @@ button:disabled {
 
 .spectrogram canvas {
   border-radius: 4px;
+  display: block; /* Avoid inline baseline spacing */
+  width: 100%;
 }
 
 /* Error states */
