@@ -87,21 +87,30 @@
         `;
         container.appendChild(waveformDiv);
 
-        const spectrogramDiv = document.createElement('div');
-        spectrogramDiv.id = `spectrogram-${groupIndex}-${fileIndex}`;
-        spectrogramDiv.className = 'spectrogram';
-        spectrogramDiv.style.cssText = `
+        // Wrapper controls layout; inner spectrogram div is clean for plugin rendering
+        const spectroWrap = document.createElement('div');
+        spectroWrap.id = `spectrowrap-${groupIndex}-${fileIndex}`;
+        spectroWrap.style.cssText = `
           position: relative;
-          height: 450px; /* smaller height as requested */
+          height: 450px;
           width: 100%;
           background: #f8f9fa;
           border: 1px solid #ddd;
           border-radius: 4px;
           overflow: hidden;
-          line-height: 0; /* remove inline canvas gaps */
+          line-height: 0;
           box-sizing: border-box;
         `;
-        container.appendChild(spectrogramDiv);
+
+        const spectrogramDiv = document.createElement('div');
+        spectrogramDiv.id = `spectrogram-${groupIndex}-${fileIndex}`;
+        spectrogramDiv.className = 'spectrogram';
+        spectrogramDiv.style.cssText = `
+          height: 100%;
+          width: 100%;
+        `;
+        spectroWrap.appendChild(spectrogramDiv);
+        container.appendChild(spectroWrap);
 
         // Create progress scroller
         const progressScroller = document.createElement('div');
@@ -118,7 +127,7 @@
           pointer-events: none;
           opacity: 0.8;
         `;
-        spectrogramDiv.appendChild(progressScroller);
+        spectroWrap.appendChild(progressScroller);
 
         const playBtn = document.createElement('button');
         playBtn.textContent = 'Play';
@@ -190,11 +199,11 @@
         });
 
         // Add click event listener to spectrogram container for click-to-play and seek
-        spectrogramDiv.addEventListener('click', (e) => {
+        spectroWrap.addEventListener('click', (e) => {
           // Calculate click position for seeking
-          const rect = spectrogramDiv.getBoundingClientRect();
+          const rect = spectroWrap.getBoundingClientRect();
           const clickX = e.clientX - rect.left;
-          const spectrogramWidth = spectrogramDiv.offsetWidth;
+          const spectrogramWidth = spectroWrap.offsetWidth;
           const clickProgress = clickX / spectrogramWidth;
           
           // Seek to clicked position
@@ -246,7 +255,7 @@
         // Update progress scroller position during playback
         wavesurfer.on('audioprocess', () => {
           const progress = wavesurfer.getCurrentTime() / wavesurfer.getDuration();
-          const spectrogramWidth = spectrogramDiv.offsetWidth;
+          const spectrogramWidth = spectroWrap.offsetWidth;
           const scrollerPosition = progress * spectrogramWidth;
           progressScroller.style.left = scrollerPosition + 'px';
         });
