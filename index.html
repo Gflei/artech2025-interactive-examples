@@ -75,7 +75,17 @@
         // Hidden waveform container (prevents empty layout space)
         const waveformDiv = document.createElement('div');
         waveformDiv.id = `waveform-${groupIndex}-${fileIndex}`;
-        waveformDiv.style.display = 'none';
+        // Keep it in the DOM and measurable, but fully hidden and non-intrusive
+        waveformDiv.style.cssText = `
+          position: absolute;
+          left: -99999px;
+          width: 1px;
+          height: 1px;
+          overflow: hidden;
+          clip: rect(0 0 0 0);
+          clip-path: inset(50%);
+          white-space: nowrap;
+        `;
         container.appendChild(waveformDiv);
 
         const spectrogramDiv = document.createElement('div');
@@ -134,7 +144,7 @@
               labels: true,
               height: 550,
               // Performance optimizations from .txt file
-              fftSamples: 2048, // Balanced FFT resolution for clarity and performance
+              fftSamples: 1024, // Streamlined FFT for performance
               useWebWorker: true, // Use web worker for FFT calculations
               scale: 'mel', // Mel scale for better human hearing perception
               frequencyMax: 20000, // Limit frequency range for performance
@@ -152,6 +162,14 @@
         wavesurfer.once('plugin-ready', () => {
           const spectrogram = wavesurfer.getPlugin('spectrogram');
           spectrogram.setOptions({ colorMap: spectrogram.constructor.COLORMAPS.hot });
+        });
+
+        // Ensure spectrogram measures after audio and layout are ready
+        wavesurfer.once('ready', () => {
+          const spectrogram = wavesurfer.getPlugin('spectrogram');
+          // Re-apply height to trigger re-measure and redraw on next frame
+          const opts = { height: 550 };
+          requestAnimationFrame(() => spectrogram.setOptions(opts));
         });
 
         allPlayers.push(wavesurfer);
