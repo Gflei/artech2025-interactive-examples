@@ -36,7 +36,6 @@ Archived examples are in `archive/` and are kept for documentation only.
 
 ## What You’ll See
 
-- Spectrogram-first UI (waveform is rendered into a hidden container)
 - Vertical red progress scroller synced to playback
 - Grouped examples by recording/composition
 
@@ -52,13 +51,11 @@ Archived examples are in `archive/` and are kept for documentation only.
   - color map: hot
   - useWebWorker: true
   - maxCanvasWidth: 4000 (tiling for performance)
-- Waveform is fully hidden and rendered in a separate `div` with `display: none`
 
 ## Performance Notes
 
 - Uses Web Workers for FFT computation
 - Canvas tiling prevents oversized canvases on long files
-- Labels enabled; disable if you need additional performance on low-end devices
 
 ## Troubleshooting
 
@@ -79,3 +76,4 @@ The complete album "Decompose/Recompose the Soundscape" is available on Bandcamp
 - WaveSurfer.js: https://wavesurfer.xyz/
 - Audio Processing: Spectral manipulation techniques
 - Field Recordings and Album: [Decompose/Recompose the Soundscape by Guy Fleisher](https://guyfleisher.bandcamp.com/album/decompose-recompose-the-soundscape)
+
